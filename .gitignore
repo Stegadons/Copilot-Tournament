@@ -1,1 +1,30 @@
-/venv
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# Environment variables
+.env
+.env.*
+!.env.sample
+
+# TODO: exclude runtime data (data\tournament.json) & user credentials (config.json)
+
+# Pytest
+.pytest_cache/
+.coverage
+
+# OS / editor files
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+
+# Docker artifacts (ja kādreiz lokāli ģenerē)
+*.log
