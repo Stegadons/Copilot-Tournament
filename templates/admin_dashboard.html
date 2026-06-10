@@ -40,6 +40,20 @@
     <div class="card mb-3">
       <div class="card-header fw-bold">Turnīra darbības</div>
       <div class="card-body d-flex flex-column gap-2">
+        <form method="post" action="{{ url_for('admin_set_tournament_name') }}" class="mb-3">
+  <div class="input-group ">
+    <input 
+      type="text" 
+      name="tournament_name" 
+      class="form-control fw-bold" 
+      placeholder="Turnīra nosaukums"
+      value="{{ config.TOURNAMENT_NAME }}"
+    >
+    <button type="submit" class="btn btn-success">
+      Saglabāt nosaukumu
+    </button>
+  </div>
+</form>
         <form method="post" action="/admin/bracket/generate">
           <button type="submit" class="btn btn-primary w-100">Ģenerēt bracket</button>
         </form>

@@ -202,6 +202,32 @@ def create_app():
         tournament_service.save_tournament(app.config['DATA_FILE'], data)
         return redirect(url_for('admin_rounds'))
 
+    # ==== Tournament name update =====
+    @app.route('/admin/tournament/name', methods=['POST'])
+    @auth_service.login_required
+    def admin_set_tournament_name():
+        import json
+        
+        config_path = "config.json"
+
+        with open(config_path, "r", encoding="utf-8") as f:
+            config = json.load(f)
+
+        name = request.form.get("tournament_name")
+
+        if name:
+            config["tournament_name"] = name.strip()
+        else:
+            config["tournament_name"] = "Turnīrs"
+
+        with open(config_path, "w", encoding="utf-8") as f:
+            json.dump(config, f, indent=2, ensure_ascii=False)
+
+        # atjaunojam runtime config
+        app.config['TOURNAMENT_NAME'] = config["tournament_name"]
+
+        return redirect(url_for('admin_dashboard'))
+
     # ===== Reset =====
     @app.route('/admin/reset/progress', methods=['POST'])
     @auth_service.login_required
