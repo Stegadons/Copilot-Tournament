@@ -2,7 +2,7 @@
 | -------------------------------------------------- |
 | :robot: AI generated content, use at your own risk |
 
-> [!INFO]  
+> [!NOTE]  
 > Application was initially made to test multi-agent software development "company".  
 > Also, because I couldn't find any lightweight system (or fully featured one, that meets my requirements) to make tournament at party more fun. 
 > 
