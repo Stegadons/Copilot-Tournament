@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1 class="mb-4">Administratora panelis</h1>
+
+<div class="row mb-4">
+  <div class="col-md-4">
+    <div class="card text-bg-primary mb-3">
+      <div class="card-body">
+        <h5 class="card-title">Spēlētāji</h5>
+        <p class="card-text display-6">{{ players }}</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-md-4">
+    <div class="card text-bg-secondary mb-3">
+      <div class="card-body">
+        <h5 class="card-title">Turnīra statuss</h5>
+        <p class="card-text display-6">{{ status }}</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-md-6">
+    <div class="card mb-3">
+      <div class="card-header fw-bold">Spēlētāju pārvaldība</div>
+      <div class="card-body">
+        <form method="post" action="/admin/players/add" class="d-flex gap-2">
+          <input type="text" name="name" class="form-control" placeholder="Spēlētāja vārds" required>
+          <button type="submit" class="btn btn-success">Pievienot</button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-md-6">
+    <div class="card mb-3">
+      <div class="card-header fw-bold">Turnīra darbības</div>
+      <div class="card-body d-flex flex-column gap-2">
+        <form method="post" action="/admin/bracket/generate">
+          <button type="submit" class="btn btn-primary w-100">Ģenerēt bracket</button>
+        </form>
+        <form method="post" action="{{ url_for('admin_reset_progress') }}" class="mb-2"
+                onsubmit="return confirm('Vai tiešām atiestatīt turnīra progresu? (Spēlētāji paliks)');">
+          <button type="submit" class="btn btn-warning w-100">Atiestatīt progresu</button>
+        </form>
+        <form method="post" action="/admin/reset/all" onsubmit="return confirm('Vai tiešām atstatīt visu turnīru?');">
+          <button type="submit" class="btn btn-danger w-100">Pilns reset</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

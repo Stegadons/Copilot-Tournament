@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1 class="mb-4">Turnīra brackets</h1>
+
+{% if rounds and rounds|length > 0 %}
+  <div class="row">
+    {% for round in rounds %}
+      <div class="col">
+        <div class="card mb-3">
+          <div class="card-header fw-bold">
+            {% if round.round == 'third_place' %}
+              Spēle par 3. vietu
+            {% else %}
+              Raunds {{ round.round }}
+            {% endif %}
+          </div>
+          <ul class="list-group list-group-flush">
+            {% for match in round.matches %}
+              <li class="list-group-item">
+                {% if match.is_bye %}
+                  <span class="text-muted">BYE:</span>
+                  <strong>Spēlētājs {{ match.player1_id }}</strong>
+                {% else %}
+                  Spēlētājs {{ match.player1_id }}
+                  <span class="mx-2">vs</span>
+                  Spēlētājs {{ match.player2_id }}
+                {% endif %}
+
+                {% if match.winner_id %}
+                  <span class="badge bg-success float-end">
+                    Uzvarētājs: {{ match.winner_id }}
+                  </span>
+                {% endif %}
+              </li>
+            {% endfor %}
+          </ul>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+{% else %}
+  <div class="alert alert-info">
+    Pašreiz nav aktīva turnīra.
+  </div>
+{% endif %}
+{% endblock %}
