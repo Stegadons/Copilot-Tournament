@@ -162,13 +162,20 @@ def calculate_standings(players: List[Dict], rounds: List[Dict]) -> List[Dict]:
         "games": 0
     } for p in players}
 
+    final_winner = None
+    final_loser = None
+    third_winner = None
+    third_loser = None
+
+    # --- apstrādā visus mačus ---
     for rnd in rounds:
         for m in rnd['matches']:
-            if m['is_bye']:
-                stats[m['winner_id']]['wins'] += 1
+            if m.get('is_bye'):
+                if m.get('winner_id') is not None:
+                    stats[m['winner_id']]['wins'] += 1
                 continue
 
-            if m['winner_id'] is None:
+            if m.get('winner_id') is None:
                 continue
 
             p1 = m['player1_id']
@@ -181,7 +188,46 @@ def calculate_standings(players: List[Dict], rounds: List[Dict]) -> List[Dict]:
             stats[w]['games'] += 1
             stats[l]['games'] += 1
 
-    return sorted(
-        stats.values(),
-        key=lambda x: (-x['wins'], x['losses'], x['name'])
+            # --- identificē finālu ---
+            if isinstance(rnd.get('round'), int) and len(rnd.get('matches', [])) == 1:
+                final_winner = w
+                final_loser = l
+
+            # --- identificē 3. vietas spēli ---
+            if rnd.get('round') == 'third_place':
+                third_winner = w
+                third_loser = l
+
+    # --- TOP4 (fiksētās vietas) ---
+    top_ids = []
+
+    if final_winner:
+        top_ids.append(final_winner)
+    if final_loser:
+        top_ids.append(final_loser)
+    if third_winner:
+        top_ids.append(third_winner)
+    if third_loser:
+        top_ids.append(third_loser)
+
+    # --- pārējie spēlētāji ---
+    remaining = [
+        stats[p_id]
+        for p_id in stats
+        if p_id not in top_ids
+    ]
+
+    remaining_sorted = sorted(
+        remaining,
+        key=lambda x: (
+            -x['wins'],
+            -(x['wins'] - x['losses']),
+            x['name']
+        )
     )
+
+    # --- apvieno galarezultātu ---
+    ordered = [stats[p_id] for p_id in top_ids if p_id in stats]
+    result = ordered + remaining_sorted
+
+    return result
