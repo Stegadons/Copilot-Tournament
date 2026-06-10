@@ -48,6 +48,7 @@ def create_app():
     app.config['SECRET_KEY'] = config['secret_key']
     app.config['DATA_FILE'] = config['data_file']
     app.config['ADMINS'] = config.get('admins', [])
+    app.config['TOURNAMENT_NAME'] = config.get('tournament_name', 'Turnīrs')
 
     # ===== Viewer =====
     @app.route('/')
