@@ -44,4 +44,30 @@
     Pašreiz nav aktīva turnīra.
   </div>
 {% endif %}
+{% if rounds and rounds|length > 0 %}
+<script>
+  let lastProgress = null;
+
+  async function checkProgress() {
+    try {
+      const response = await fetch("/viewer/progress");
+      const data = await response.json();
+
+      if (lastProgress !== null && data.progress !== lastProgress) {
+        window.location.reload();
+      }
+
+      lastProgress = data.progress;
+    } catch (e) {
+      console.error("Progress check failed", e);
+    }
+  }
+
+  // pārbaude ik pēc 5 sekundēm
+  setInterval(checkProgress, 5000);
+
+  // initial load
+  checkProgress();
+</script>
+{% endif %}
 {% endblock %}

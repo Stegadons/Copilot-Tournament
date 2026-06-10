@@ -75,6 +75,21 @@ def create_app():
             standings=standings
         )
 
+    @app.route('/viewer/progress')
+    def viewer_progress():
+        data = tournament_service.load_tournament(app.config['DATA_FILE'])
+        
+        # izmantojam kopējo progresu kā indikatoru:
+        # cik mači ir pabeigti
+        completed_matches = 0
+        
+        for rnd in data.get('rounds', []):
+            for m in rnd.get('matches', []):
+                if m.get('winner_id') is not None:
+                    completed_matches += 1
+
+        return {"progress": completed_matches}
+  
     # ===== Admin autentifikācija =====
     @app.route('/admin/login', methods=['GET', 'POST'])
     def admin_login():
