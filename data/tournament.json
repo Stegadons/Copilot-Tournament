@@ -1,5 +1,5 @@
 {
-  "status": "not_started",
+  "status": "finished",
   "players": [
     {
       "id": 1,
@@ -34,5 +34,82 @@
       "name": "8"
     }
   ],
-  "rounds": []
+  "rounds": [
+    {
+      "round": 1,
+      "matches": [
+        {
+          "id": 1,
+          "player1_id": 2,
+          "player2_id": 3,
+          "winner_id": 2,
+          "is_bye": false
+        },
+        {
+          "id": 2,
+          "player1_id": 6,
+          "player2_id": 4,
+          "winner_id": 6,
+          "is_bye": false
+        },
+        {
+          "id": 3,
+          "player1_id": 8,
+          "player2_id": 7,
+          "winner_id": 8,
+          "is_bye": false
+        },
+        {
+          "id": 4,
+          "player1_id": 1,
+          "player2_id": 5,
+          "winner_id": 1,
+          "is_bye": false
+        }
+      ]
+    },
+    {
+      "round": 2,
+      "matches": [
+        {
+          "id": 1,
+          "player1_id": 2,
+          "player2_id": 6,
+          "winner_id": 2,
+          "is_bye": false
+        },
+        {
+          "id": 2,
+          "player1_id": 8,
+          "player2_id": 1,
+          "winner_id": 8,
+          "is_bye": false
+        }
+      ]
+    },
+    {
+      "round": 3,
+      "matches": [
+        {
+          "id": 1,
+          "player1_id": 2,
+          "player2_id": 8,
+          "winner_id": 2,
+          "is_bye": false
+        }
+      ]
+    },
+    {
+      "round": "third_place",
+      "matches": [
+        {
+          "id": 1,
+          "player1_id": 6,
+          "player2_id": 1,
+          "winner_id": 1,
+          "is_bye": false
+        }
+      ]
+    }
+  ]
 }

@@ -5,12 +5,16 @@
   {% set _ = player_map.update({p.id: p.name}) %}
 {% endfor %}
 
+{% set numeric_rounds = rounds | selectattr('round', 'number') | list %}
+{% set third_place_round = rounds | selectattr('round', 'equalto', 'third_place') | list %}
+
+
 {% block content %}
 <h1 class="mb-4">Turnīra brackets</h1>
 
 {% if rounds and rounds|length > 0 %}
   <div class="row">
-    {% for round in rounds %}
+    {% for round in numeric_rounds %}
       <div class="col">
         <div class="card mb-3">
           <div class="card-header fw-bold">
@@ -41,6 +45,29 @@
             {% endfor %}
           </ul>
         </div>
+        {% if round.matches|length == 1 %}
+          {% for r in third_place_round %}
+            <div class="card mb-3 mt-3">
+              <div class="card-header fw-bold">
+                Spēle par 3. vietu
+              </div>
+              <ul class="list-group list-group-flush">
+                {% for match in r.matches %}
+                  <li class="list-group-item">
+                    {% if match.is_bye %}
+                      <span class="text-muted">BYE:</span>
+                      <strong>{{ player_map.get(match.player1_id, 'Spēlētājs ' ~ match.player1_id) }}</strong>
+                    {% else %}
+                      {{ player_map.get(match.player1_id, 'Spēlētājs ' ~ match.player1_id) }}
+                      <span class="mx-2">vs</span>
+                      {{ player_map.get(match.player2_id, 'BYE' if match.player2_id is none else 'Spēlētājs ' ~ match.player2_id) }}
+                    {% endif %}
+                  </li>
+                {% endfor %}
+              </ul>
+            </div>
+          {% endfor %}
+        {% endif %}
       </div>
     {% endfor %}
   </div>

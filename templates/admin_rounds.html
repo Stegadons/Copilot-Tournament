@@ -5,11 +5,14 @@
   {% set _ = player_map.update({p.id: p.name}) %}
 {% endfor %}
 
+{% set numeric_rounds = rounds | selectattr('round', 'number') | list %}
+{% set third_place_round = rounds | selectattr('round', 'equalto', 'third_place') | list %}
+
 {% block content %}
 <h1 class="mb-4">Raundi un rezultātu ievade</h1>
 
 {% if rounds and rounds|length > 0 %}
-  {% for round in rounds %}
+  {% for round in rounds if round.round != 'third_place' %}
     <div class="card mb-4">
       <div class="card-header fw-bold">
         {% if round.round == 'third_place' %}
@@ -28,7 +31,9 @@
               <div class="col-md-4">
                 {% if match.is_bye %}
                   <span class="text-muted">BYE:</span>
-                  <strong>{{ player_map.get(match.player1_id, 'Spēlētājs ' ~ match.player1_id) }}</strong>
+                  <strong>
+                    {{ player_map.get(match.player1_id, 'Spēlētājs ' ~ match.player1_id) }}
+                  </strong>
                 {% else %}
                   {{ player_map.get(match.player1_id, 'Spēlētājs ' ~ match.player1_id) }}
                   vs
@@ -48,7 +53,9 @@
                     </option>
                   </select>
                 {% else %}
-                  <span class="badge bg-success">Uzvarētājs noteikts automātiski</span>
+                  <span class="badge bg-success">
+                    Uzvarētājs noteikts automātiski
+                  </span>
                 {% endif %}
               </div>
 
@@ -59,7 +66,9 @@
                   </span>
                 {% else %}
                   {% if not match.is_bye %}
-                    <button type="submit" class="btn btn-primary">Saglabāt</button>
+                    <button type="submit" class="btn btn-primary">
+                      Saglabāt
+                    </button>
                   {% endif %}
                 {% endif %}
               </div>
@@ -68,8 +77,76 @@
         {% endfor %}
       </ul>
     </div>
+
+    {% if round.matches|length == 2 %}
+      {% for r in third_place_round %}
+        <div class="card mb-4">
+          <div class="card-header fw-bold">
+            Spēle par 3. vietu
+          </div>
+
+          <ul class="list-group list-group-flush">
+            {% for match in r.matches %}
+              <li class="list-group-item">
+
+                <form method="post" action="/admin/match/winner" class="row align-items-center g-2">
+
+                  <input type="hidden" name="round" value="{{ r.round }}">
+                  <input type="hidden" name="match" value="{{ match.id }}">
+
+                  <div class="col-md-4">
+                    {% if match.is_bye %}
+                      <span class="text-muted">BYE:</span>
+                      <strong>{{ player_map.get(match.player1_id, 'Spēlētājs ' ~ match.player1_id) }}</strong>
+                    {% else %}
+                      {{ player_map.get(match.player1_id, 'Spēlētājs ' ~ match.player1_id) }}
+                      vs
+                      {{ player_map.get(match.player2_id, 'BYE' if match.player2_id is none else 'Spēlētājs ' ~ match.player2_id) }}
+                    {% endif %}
+                  </div>
+
+                  <div class="col-md-4">
+                    {% if not match.is_bye %}
+                      <select name="winner" class="form-select" required>
+                        <option value="">-- izvēlies uzvarētāju --</option>
+
+                        <option value="{{ match.player1_id }}">
+                          {{ player_map.get(match.player1_id, 'Spēlētājs ' ~ match.player1_id) }}
+                        </option>
+
+                        <option value="{{ match.player2_id }}">
+                          {{ player_map.get(match.player2_id, 'Spēlētājs ' ~ match.player2_id) }}
+                        </option>
+
+                      </select>
+                    {% else %}
+                      <span class="badge bg-success">
+                        Uzvarētājs noteikts automātiski
+                      </span>
+                    {% endif %}
+                  </div>
+
+                  <div class="col-md-4 text-end">
+                    {% if match.winner_id %}
+                      <span class="badge bg-success">
+                        Uzvarētājs: {{ player_map.get(match.winner_id, match.winner_id) }}
+                      </span>
+                    {% endif %}
+                  </div>
+
+                </form>
+
+              </li>
+            {% endfor %}
+          </ul>
+        </div>
+      {% endfor %}
+    {% endif %}
+
   {% endfor %}
 {% else %}
-  <div class="alert alert-info">Pašlaik nav aktīvu raundu.</div>
+  <div class="alert alert-info">
+    Pašlaik nav aktīvu raundu.
+  </div>
 {% endif %}
 {% endblock %}
