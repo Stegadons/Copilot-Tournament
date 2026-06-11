@@ -59,3 +59,31 @@ def reset_all(data_file: str):
         "rounds": []
     }
     save_tournament(data_file, data)
+
+
+def delete_player(data_file: str, player_id: int):
+    data = load_tournament(data_file)
+
+    if data.get('rounds'):
+        raise ValueError("Turnīrs jau sācies – spēlētājus dzēst nedrīkst")
+
+    data['players'] = [
+        p for p in data.get('players', [])
+        if p.get('id') != player_id
+    ]
+
+    save_tournament(data_file, data)
+
+
+def update_player(data_file: str, player_id: int, name: str):
+    data = load_tournament(data_file)
+
+    if data.get('rounds'):
+        raise ValueError("Turnīrs jau sācies – spēlētājus labot nedrīkst")
+
+    for p in data.get('players', []):
+        if p.get('id') == player_id:
+            p['name'] = name.strip() if name else p['name']
+            break
+
+    save_tournament(data_file, data)

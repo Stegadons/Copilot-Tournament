@@ -126,6 +126,17 @@ def create_app():
             status=STATUS_LABELS.get(status_code, status_code)
         )
 
+    @app.route('/admin/players')
+    @auth_service.login_required
+    def admin_players():
+        data = tournament_service.load_tournament(app.config['DATA_FILE'])
+
+        return render_template(
+            'admin_players.html',
+            players=data.get('players', []),
+            rounds=data.get('rounds', [])
+        )
+    
     # ===== Spēlētāji =====
     @app.route('/admin/players/add', methods=['POST'])
     @auth_service.login_required
@@ -134,6 +145,40 @@ def create_app():
         if name:
             tournament_service.add_player(app.config['DATA_FILE'], name)
         return redirect(url_for('admin_dashboard'))
+
+    @app.route('/admin/players/edit', methods=['POST'])
+    @auth_service.login_required
+    def admin_edit_player():
+        player_id = request.form.get('player_id')
+        name = request.form.get('name')
+
+        if player_id and name:
+            try:
+                tournament_service.update_player(
+                    app.config['DATA_FILE'],
+                    int(player_id),
+                    name
+                )
+            except ValueError:
+                pass
+
+        return redirect(url_for('admin_players'))
+    
+    @app.route('/admin/players/delete', methods=['POST'])
+    @auth_service.login_required
+    def admin_delete_player():
+        player_id = request.form.get('player_id')
+
+        if player_id:
+            try:
+                tournament_service.delete_player(
+                    app.config['DATA_FILE'],
+                    int(player_id)
+                )
+            except ValueError:
+                pass
+
+        return redirect(url_for('admin_players'))
 
     # ===== Bracket =====
     @app.route('/admin/bracket/generate', methods=['POST'])

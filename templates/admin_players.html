@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+  <h2>Spēlētāju pārvaldība</h2>
+
+  <a href="{{ url_for('admin_dashboard') }}" class="btn btn-secondary mb-3">
+    ← Atpakaļ
+  </a>
+
+  {% set locked = rounds and rounds|length > 0 %}
+
+  <table class="table table-striped">
+    <thead>
+      <tr>
+        <th>Vārds</th>
+        <th>Darbības</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for p in players %}
+      <tr>
+        <td>
+          <form method="post" action="{{ url_for('admin_edit_player') }}">
+            <input type="hidden" name="player_id" value="{{ p.id }}">
+
+            <input 
+              type="text"
+              name="name"
+              value="{{ p.name }}"
+              class="form-control"
+              {% if locked %}disabled{% endif %}
+            >
+        </td>
+
+        <td>
+            <button 
+              type="submit" 
+              class="btn btn-primary btn-sm"
+              {% if locked %}disabled title="Turnīrs jau sācies"{% endif %}
+            >
+              Saglabāt
+            </button>
+          </form>
+
+          <form method="post" action="{{ url_for('admin_delete_player') }}" style="display:inline;">
+            <input type="hidden" name="player_id" value="{{ p.id }}">
+
+            <button 
+              type="submit" 
+              class="btn btn-danger btn-sm"
+              onclick="return confirm('Vai dzēst spēlētāju?')"
+              {% if locked %}disabled title="Turnīrs jau sācies"{% endif %}
+            >
+              Dzēst
+            </button>
+          </form>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+  {% if locked %}
+  <div class="alert alert-warning mt-3">
+    Spēlētājus var rediģēt tikai pirms turnīra sākuma.
+  </div>
+  {% endif %}
+
+</div>
+{% endblock %}
