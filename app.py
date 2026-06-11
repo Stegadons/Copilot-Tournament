@@ -73,7 +73,8 @@ def create_app():
         )
         return render_template(
             'viewer_standings.html',
-            standings=standings
+            standings=standings,
+            status_code=data.get('status')
         )
 
     @app.route('/viewer/progress')
