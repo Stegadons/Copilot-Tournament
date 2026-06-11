@@ -124,7 +124,9 @@ def create_app():
         return render_template(
             'admin_dashboard.html',
             players=len(data.get('players', [])),
-            status=STATUS_LABELS.get(status_code, status_code)
+            status=STATUS_LABELS.get(status_code, status_code),
+            status_code=status_code,
+            rounds=data.get('rounds', [])
         )
 
     @app.route('/admin/players')
