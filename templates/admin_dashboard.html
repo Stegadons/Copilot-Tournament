@@ -23,13 +23,22 @@
   </div>
 </div>
 
+{# Darbības ar spēlētājiem #}
 <div class="row">
   <div class="col-md-6">
     <div class="card mb-3">
       <div class="card-header fw-bold">Spēlētāju pārvaldība</div>
       <div class="card-body">
         <form method="post" action="/admin/players/add" class="d-flex gap-2">
-          <input type="text" name="name" class="form-control" placeholder="Spēlētāja vārds" required>
+          <input 
+            type="text" 
+            name="name" 
+            class="form-control" 
+            placeholder="Spēlētāja vārds" 
+            required
+            id="player-name-input"
+            autofocus
+          >
           <button type="submit" class="btn btn-success">Pievienot</button>
         </form>
         <div class="mt-3">
@@ -45,6 +54,7 @@
     </div>
   </div>
 
+  {# Turnīra darbību pogu bloks #}
   <div class="col-md-6">
     <div class="card mb-3">
       <div class="card-header fw-bold">Turnīra darbības</div>
@@ -87,3 +97,13 @@
   </div>
 </div>
 {% endblock %}
+
+{# Fokusējam ievades lauku, lai vieglāk varētu pievienot spēlētājus #}
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+    const input = document.getElementById("player-name-input");
+    if (input) {
+      input.focus();
+    }
+  });
+</script>
