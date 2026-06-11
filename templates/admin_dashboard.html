@@ -59,6 +59,7 @@
     <div class="card mb-3">
       <div class="card-header fw-bold">Turnīra darbības</div>
       <div class="card-body d-flex flex-column gap-2">
+
         <form method="post" action="{{ url_for('admin_set_tournament_name') }}" class="mb-3">
           <div class="input-group ">
             <input 
@@ -73,8 +74,19 @@
             </button>
           </div>
         </form>
-        <form method="post" action="/admin/bracket/generate">
-          <button type="submit" class="btn btn-primary w-100">Ģenerēt bracket</button>
+        <form 
+          method="post" 
+          action="/admin/bracket/generate"
+          {% if status_code == 'not_started' %}
+          onsubmit="return confirm('Šī darbība atiestatīs turnīra progresu un pārģenerēs bracket. Vai vēlies turpināt?');"
+          {% endif %}
+        >
+          <button 
+            type="submit" 
+            class="btn btn-primary w-100" 
+          >
+            Ģenerēt bracket
+          </button>
         </form>
          <a href="{{ url_for('admin_rounds') }}"
           class="btn btn-primary w-100"
