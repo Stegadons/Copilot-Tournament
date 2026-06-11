@@ -1,5 +1,10 @@
 {% extends "base.html" %}
 
+{% set player_map = {} %}
+{% for p in players %}
+  {% set _ = player_map.update({p.id: p.name}) %}
+{% endfor %}
+
 {% block content %}
 <h1 class="mb-4">Turnīra brackets</h1>
 
@@ -20,11 +25,11 @@
               <li class="list-group-item">
                 {% if match.is_bye %}
                   <span class="text-muted">BYE:</span>
-                  <strong>Spēlētājs {{ match.player1_id }}</strong>
+                  <strong>{{ player_map.get(match.player1_id, 'Spēlētājs ' ~ match.player1_id) }}</strong>
                 {% else %}
-                  Spēlētājs {{ match.player1_id }}
+                  {{ player_map.get(match.player1_id, 'Spēlētājs ' ~ match.player1_id) }}
                   <span class="mx-2">vs</span>
-                  Spēlētājs {{ match.player2_id }}
+                  {{ player_map.get(match.player2_id, 'BYE' if match.player2_id is none else 'Spēlētājs ' ~ match.player2_id) }}
                 {% endif %}
 
                 {% if match.winner_id %}

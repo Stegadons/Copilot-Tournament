@@ -1,5 +1,10 @@
 {% extends "base.html" %}
 
+{% set player_map = {} %}
+{% for p in players %}
+  {% set _ = player_map.update({p.id: p.name}) %}
+{% endfor %}
+
 {% block content %}
 <h1 class="mb-4">Raundi un rezultātu ievade</h1>
 
@@ -23,9 +28,11 @@
               <div class="col-md-4">
                 {% if match.is_bye %}
                   <span class="text-muted">BYE:</span>
-                  <strong>Spēlētājs {{ match.player1_id }}</strong>
+                  <strong>{{ player_map.get(match.player1_id, 'Spēlētājs ' ~ match.player1_id) }}</strong>
                 {% else %}
-                  Spēlētājs {{ match.player1_id }} vs Spēlētājs {{ match.player2_id }}
+                  {{ player_map.get(match.player1_id, 'Spēlētājs ' ~ match.player1_id) }}
+                  vs
+                  {{ player_map.get(match.player2_id, 'BYE' if match.player2_id is none else 'Spēlētājs ' ~ match.player2_id) }}
                 {% endif %}
               </div>
 
@@ -33,8 +40,12 @@
                 {% if not match.is_bye %}
                   <select name="winner" class="form-select" required>
                     <option value="">-- izvēlies uzvarētāju --</option>
-                    <option value="{{ match.player1_id }}">Spēlētājs {{ match.player1_id }}</option>
-                    <option value="{{ match.player2_id }}">Spēlētājs {{ match.player2_id }}</option>
+                    <option value="{{ match.player1_id }}">
+                      {{ player_map.get(match.player1_id, 'Spēlētājs ' ~ match.player1_id) }}
+                    </option>
+                    <option value="{{ match.player2_id }}">
+                      {{ player_map.get(match.player2_id, 'Spēlētājs ' ~ match.player2_id) }}
+                    </option>
                   </select>
                 {% else %}
                   <span class="badge bg-success">Uzvarētājs noteikts automātiski</span>
@@ -43,7 +54,9 @@
 
               <div class="col-md-4 text-end">
                 {% if match.winner_id %}
-                  <span class="badge bg-success">Uzvarētājs: {{ match.winner_id }}</span>
+                  <span class="badge bg-success">
+                    Uzvarētājs: {{ player_map.get(match.winner_id, match.winner_id) }}
+                  </span>
                 {% else %}
                   {% if not match.is_bye %}
                     <button type="submit" class="btn btn-primary">Saglabāt</button>

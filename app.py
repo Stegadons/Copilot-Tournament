@@ -60,7 +60,8 @@ def create_app():
         data = tournament_service.load_tournament(app.config['DATA_FILE'])
         return render_template(
             'viewer_bracket.html',
-            rounds=data.get('rounds', [])
+            rounds=data.get('rounds', []),
+            players=data.get('players', [])
         )
 
     @app.route('/viewer/standings')
@@ -197,7 +198,8 @@ def create_app():
         data = tournament_service.load_tournament(app.config['DATA_FILE'])
         return render_template(
             'admin_rounds.html',
-            rounds=data.get('rounds', [])
+            rounds=data.get('rounds', []),
+            players=data.get('players', [])
         )
 
     @app.route('/admin/match/winner', methods=['POST'])
