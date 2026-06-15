@@ -203,7 +203,7 @@ git clone https://github.com/Stegadons/Copilot-Tournament.git .
 
 Palaiž aplikāciju
 ```
-docker compose up --build
+docker compose up -d --build
 ```
 
 Konfigurē SECRET_KEY, izveido lietotāju
@@ -211,6 +211,12 @@ Konfigurē SECRET_KEY, izveido lietotāju
 docker exec -it copilot-tournament python tools/make-user.py set-secret <tavs secret>
 docker exec -it copilot-tournament python tools/make-user.py add admin
 ```
+
+Pēc config izmaiņām ir nepieciešams restart.
+```
+docker compose restart
+```
+
 
 ---
 

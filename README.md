@@ -47,7 +47,7 @@ Piekļuve: http://localhost:5000
 ### Docker compose (ar datu persistēšanu)
 
 ```bash
-docker compose up --build
+docker compose up -d --build
 ```
 Piekļuve: http://localhost:5000
 
