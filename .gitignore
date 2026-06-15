@@ -14,8 +14,6 @@ env/
 .env.*
 !.env.sample
 
-# TODO: exclude runtime data (data\tournament.json) & user credentials (config.json)
-
 # Pytest
 .pytest_cache/
 .coverage
@@ -28,3 +26,8 @@ Thumbs.db
 
 # Docker artifacts (ja kādreiz lokāli ģenerē)
 *.log
+
+# Exclude runtime data (data\tournament.json) & user credentials (config.json)
+config.json
+data/*
+!data/.gitkeep

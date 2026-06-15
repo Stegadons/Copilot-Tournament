@@ -39,8 +39,39 @@ def create_app():
 
     # ===== Konfigurācijas ielāde =====
     config_path = os.environ.get("CONFIG_PATH", "config.json")
+
+    # ===== Auto-init konfigurācija =====
     if not os.path.exists(config_path):
-        raise FileNotFoundError(f"Nav atrasts konfigurācijas fails: {config_path}")
+        os.makedirs("data", exist_ok=True)
+
+        default_config = {
+            "secret_key": "change-me",
+            "data_file": "data/tournament.json",
+            "admins": [],
+            "tournament_name": "Turnīrs"
+        }
+
+        with open(config_path, "w", encoding="utf-8") as f:
+            json.dump(default_config, f, indent=2, ensure_ascii=False)
+
+    # ===== Load config =====
+    with open(config_path, 'r', encoding='utf-8') as f:
+        config = json.load(f)
+
+    # ===== Auto-init data file =====
+    data_file = config.get("data_file", "data/tournament.json")
+
+    os.makedirs(os.path.dirname(data_file), exist_ok=True)
+
+    if not os.path.exists(data_file):
+        initial_data = {
+            "status": "not_started",
+            "players": [],
+            "rounds": []
+        }
+
+        with open(data_file, "w", encoding="utf-8") as f:
+            json.dump(initial_data, f, indent=2, ensure_ascii=False)
 
     with open(config_path, 'r', encoding='utf-8') as f:
         config = json.load(f)
