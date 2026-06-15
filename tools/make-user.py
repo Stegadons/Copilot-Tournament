@@ -72,6 +72,20 @@ def add_user(username):
     print(f"✅ Lietotājs '{username}' pievienots")
 
 
+def list_users():
+    config = load_config()
+    admins = config.get("admins", [])
+
+    if not admins:
+        print("Nav izveidotu administratoru")
+        return
+
+    print("Admins:")
+
+    for admin in admins:
+        print(f" - {admin.get('username')}")
+
+
 def delete_user(username):
     config = load_config()
 
@@ -138,6 +152,7 @@ def main():
 Lietošana:
 
   python tools/make-user.py add <username>
+  python tools/make-user.py list
   python tools/make-user.py delete <username>
   python tools/make-user.py set-password <username>
   python tools/make-user.py set-secret
@@ -148,6 +163,9 @@ Lietošana:
 
     if command == "add" and len(sys.argv) == 3:
         add_user(sys.argv[2])
+
+    elif command == "list":
+        list_users()
 
     elif command == "delete" and len(sys.argv) == 3:
         delete_user(sys.argv[2])
