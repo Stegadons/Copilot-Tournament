@@ -24,11 +24,7 @@ Administrators ir atbildīgs par:
 
 ### 3.1. Pieslēgšanās
 
-Administratora sadaļa ir pieejama adresē:
-
-```
-/admin/login
-```
+Administratora sadaļa ir pieejama adresē: `/admin/login`
 
 Pēc veiksmīgas autentifikācijas tiek izveidota droša sesija, kas ļauj piekļūt visām administrēšanas funkcijām.
 
@@ -69,57 +65,58 @@ Piemērs:
 
 ⚠️ Jebkuras izmaiņas `config.json` failā prasa aplikācijas restartēšanu.
 
-### 4.2. Paroles hash ģenerēšana
+### 4.2. Administratoru pārvaldība (CLI rīks)
 
-Paroles hash jāģenerē pirms ievietošanas `config.json`.
+Administratoru lietotāju pārvaldībai jāizmanto CLI rīks `tools\make-user.py`
 
-#### Izmantojot Python (Flask utilītu)
+#### Komandas:
 
 ```
-from werkzeug.security import generate_password_hash
-print(generate_password_hash("mana_parole"))
+# Parādīt visus administratorus
+python tools/make-user.py list
+
+# Pievienot lietotāju
+python tools/make-user.py add <username>
+
+# Dzēst lietotāju
+python tools/make-user.py delete <username>
+
+# Mainīt paroli
+python tools/make-user.py set-password <username>
+
+# Uzstādīt SECRET_KEY
+python tools/make-user.py set-secret
 ```
 
-**Rezultāts**
-Iegūto hash ievietojiet config.json laukā `password_hash`.
+CLI rīks:
+- izveido lietotāju
+- automātiski ģenerē paroles hash  
+- modificē `config.json` ar vajadzīgajām vērtībām
 
-⚠️ Nekad neglabājiet paroles atklātā tekstā.
-
-#### Paroles hash ģenerēšana ar CLI (ieteicamais variants administratoriem)
-
-Šis variants ir paredzēts administratoriem, DevOps un CI/CD vidēm, kur nav vēlams veidot atsevišķus skriptus vai palaist Flask aplikāciju.
-
-**CLI komanda**
-```
-python -c "from werkzeug.security import generate_password_hash; print(generate_password_hash('mana_parole'))"
-```
-
-**Pielietojums**
-- Rezultātā iegūto hash ievieto `config.json` laukā `password_hash`
-- Var izmantot lokāli, serverī vai CI pipeline laikā
-
-**Priekšrocības**
-- Nav jāveido papildu faili
-- Nav atkarīgs no aplikācijas palaišanas
-- Ideāli piemērots Docker / CI vidēm
-
-⚠️ Nekad neglabājiet paroles atklātā tekstā.
+Pēc config izmaiņām ir nepieciešams restart.
 
 ---
 
-## 5. Administratoru kontu pārvaldība
+## 5. Docker vide
 
-### 5.1. Jauna administratora pievienošana
+Sistēma pilnībā atbalsta Docker.
 
-Lai pievienotu jaunu administratoru:
-1. Izveidojiet paroles hash (piem., izmantojot Flask utilītas).
-2. Pievienojiet jaunu objektu masīvā `admins`.
-3. Saglabājiet failu un restartējiet aplikāciju.
+### Palaišana
 
-### 5.2. Administratora dzēšana
+```
+docker compose up --build
+```
 
-- Dzēsiet attiecīgo ierakstu no `admins` masīva.
-- Pārliecinieties, ka sistēmā paliek vismaz viens administrators.
+### Uzvedība
+
+- `config.json` tiek izveidots automātiski, ja neeksistē
+- `data/` direktorija tiek izmantota datu glabāšanai
+- dati tiek saglabāti ārpus containera (volume)
+
+### Svarīgi
+
+- config izmaiņām nepieciešams restart
+- regulāri veiciet datu backup (`data/tournament.json`)
 
 ---
 

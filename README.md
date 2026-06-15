@@ -34,13 +34,25 @@ Projekts izstrādāts kā mācību / neliela mēroga produkcijas risinājums, iz
 ```
 python app.py
 ```
-Piekļuve: http://127.0.0.1:5000
+Piekļuve: http://localhost:5000
 
-### Docker Compose
-```
-docker compose up -d
+### Docker (build+run)
+
+```bash
+docker build -t copilot-tournament .
+docker run -p 5000:5000 copilot-tournament
 ```
 Piekļuve: http://localhost:5000
+
+### Docker compose (ar datu persistēšanu)
+
+```bash
+docker compose up --build
+```
+Piekļuve: http://localhost:5000
+
+`.data/` direktorija tiek izmantota kā Docker volume, lai saglabātu turnīra datus
+
 
 ## Pieslēgšanās
 - Skatītājs: publiski
@@ -53,6 +65,7 @@ Sīkāk skatīt [INSTALL.md](docs/INSTALL.md) un [USER_GUIDE.md](docs/USER_GUIDE
 - **Frontend:** HTML5, Bootstrap
 - **Datu glabāšana:** JSON faili
 - **Autentifikācija:** Flask sessions + konfigurācijas fails
+- **CLI tool lietotāju pārvaldībai:** Python (Flask)
 
 ## Dokumentācija
 Projektā ir pieejami sekojoši dokumenti:

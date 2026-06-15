@@ -61,7 +61,7 @@ flask>=2.3
 
 ### config.json
 
-Failā `config.json` ir jānorāda:
+Failā `config.json` norāda:
 - turnīra nosaukums
 - Flask `secret_key`
 - administratora lietotājvārds un paroles hash
@@ -82,22 +82,50 @@ Piemērs:
 }
 ```
 
-⚠️ Paroles nekad nedrīkst glabāt atklātā tekstā.
+Ja konfigurācijas fails neeksistē, tas tiek izveidots automātiski, ar noklusēto saturu:
+```
+{
+  "secret_key": "change-me",
+  "data_file": "data/tournament.json",
+  "admins": [],
+  "tournament_name": "Turnīrs"
+}
+```
 
 ### 4.2. Paroles hash ģenerēšana
 
-Paroles hash jāģenerē pirms ievietošanas `config.json`.
+Paroles hash ģenerēšanai tiek imantota Python Flask utilīta:
 
-**Izmantojot Python (Flask utilītu)**
 ```
 from werkzeug.security import generate_password_hash
 print(generate_password_hash("mana_parole"))
 ```
 
-**CLI komanda**
+#### CLI rīks `tools/make-user.py`
+
 ```
-python -c "from werkzeug.security import generate_password_hash; print(generate_password_hash('mana_parole'))"
+# Parādīt visus administratorus
+python tools/make-user.py list
+
+# Pievienot lietotāju
+python tools/make-user.py add <username>
+
+# Dzēst lietotāju
+python tools/make-user.py delete <username>
+
+# Mainīt paroli
+python tools/make-user.py set-password <username>
+
+# Uzstādīt SECRET_KEY
+python tools/make-user.py set-secret
 ```
+
+CLI rīks:
+- izveido/dzēš lietotāju
+- automātiski ģenerē paroles hash  
+- modificē `config.json` ar norādītajām vērtībām
+
+Pēc config izmaiņām ir nepieciešams restart.
 
 ## 2.5. Datu faila inicializācija
 
@@ -106,10 +134,9 @@ Pārliecinieties, ka eksistē fails:
 data/tournament.json
 ```
 
-Ja fails neeksistē, izveidojiet to ar sākotnējo saturu:
+Ja fails neeksistē, tas tiek izveidots automātiski ar sākotnējo saturu:
 ```
 {
-  "name": "",
   "status": "not_started",
   "players": [],
   "rounds": []
@@ -127,7 +154,7 @@ Ja viss ir konfigurēts korekti, konsolē redzēsiet Flask starta paziņojumu.
 
 Pēc tam atveriet pārlūkā:
 ```
-http://127.0.0.1:5000
+http://localhost:5000
 ```
 
 ---
@@ -136,40 +163,53 @@ http://127.0.0.1:5000
 
 ## 3.1. docker-compose.yml piemērs
 ```
-version: '3.9'
 services:
-  app:
-    image: tournament-app:latest
+  web:
     build: .
+    container_name: copilot-tournament
+    environment:
+      - FLASK_ENV=production
     ports:
       - "5000:5000"
     volumes:
       - ./data:/app/data
-    environment:
-      - FLASK_ENV=production
+    restart: unless-stopped
 ```
 
 ## 3.2. Datu persistences princips
 
-Docker vidē ir jānodrošina **persistēti gan turnīra dati, gan konfigurācija**.
+- `config.json` tiek izveidots automātiski, ja neeksistē (netiek persistēts)
+- `data/` direktorija tiek izmantota datu glabāšanai
+- dati tiek saglabāti ārpus containera (volume)
 
 ### Ieteicamā volume konfigurācija
 
 ```
 volumes:
   - ./data:/app/data
-  - ./config.json:/app/config.json
 ```
 ### Paskaidrojums
 - `./data/` – saglabā turnīra stāvokli (`tournament.json`)
-- `./config.json` – saglabā admin kontus, paroles hash un `secret_key`
-- Abi faili saglabājas starp konteineru restarta reizēm
+- folderī esošie faili saglabājas starp konteineru restarta reizēm
 
-⚠️ `config.json` nedrīkst iekļaut Docker image iekšpusē kā statisku failu produkcijā.
+⚠️ `config.json` nav iekļauts Docker image iekšpusē kā statisks fails produkcijā.
 
 ## 3.3. Palaišana
+
+Klonē GitHub repozitoriju
 ```
-docker compose up -d
+git clone https://github.com/Stegadons/Copilot-Tournament.git .
+```
+
+Palaiž aplikāciju
+```
+docker compose up --build
+```
+
+Konfigurē SECRET_KEY, izveido lietotāju
+```
+docker exec -it copilot-tournament python tools/make-user.py set-secret <tavs secret>
+docker exec -it copilot-tournament python tools/make-user.py add admin
 ```
 
 ---
@@ -178,18 +218,20 @@ docker compose up -d
 
 ## 4.1. Dockerfile piemērs
 ```
-FROM python:3.11-slim
+FROM python:3.12-slim
+ENV PYTHONDONTWRITEBYTECODE=1
+ENV PYTHONUNBUFFERED=1
 WORKDIR /app
-COPY requirements.txt .
+COPY requirements.txt /app/requirements.txt
 RUN pip install --no-cache-dir -r requirements.txt
-COPY . .
+COPY . /app
 EXPOSE 5000
 CMD ["python", "app.py"]
 ```
 
 ## 4.2. Image build
 ```
-docker build -t tournament-app:latest .
+docker build -t copilot-tournament:latest .
 ```
 
 ## 4.3. CI izmantošana
@@ -198,7 +240,7 @@ docker build -t tournament-app:latest .
 
 ---
 
-# 8. Piekļuve sistēmai
+# 5. Piekļuve sistēmai
 
 - **Skatītājs:** pieejams bez autentifikācijas
 - **Administrators:**
@@ -207,7 +249,7 @@ docker build -t tournament-app:latest .
 
 ---
 
-# 9. Biežāk sastopamās problēmas
+# 6. Biežāk sastopamās problēmas
 
 ## Aplikācija nepalaižas
 - Pārbaudiet Python versiju
@@ -220,7 +262,7 @@ docker build -t tournament-app:latest .
 
 ---
 
-# 10. Piezīmes
+# 7. Piezīmes
 
 - Sistēma paredzēta **vienam aktīvam turnīram**
 - Datu glabāšana JSON failos nav paredzēta augstai vienlaicīgai slodzei
