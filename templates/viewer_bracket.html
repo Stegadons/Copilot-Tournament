@@ -47,15 +47,17 @@
                   {{ player_map.get(match.player2_id, 'BYE' if match.player2_id is none else 'Spēlētājs ' ~ match.player2_id) }}
                 {% endif %}
 
+                {# UZLABOTS: Tagad rāda vārdu, nevis ID #}
                 {% if match.winner_id %}
                   <span class="badge bg-success float-end">
-                    Uzvarētājs: {{ match.winner_id }}
+                    Uzvarētājs: {{ player_map.get(match.winner_id, match.winner_id) }}
                   </span>
                 {% endif %}
               </li>
             {% endfor %}
           </ul>
         </div>
+        
         {% if round.matches|length == 1 %}
           {% for r in third_place_round %}
             <div class="card mb-3 mt-3">
@@ -73,6 +75,13 @@
                       <span class="mx-2">vs</span>
                       {{ player_map.get(match.player2_id, 'BYE' if match.player2_id is none else 'Spēlētājs ' ~ match.player2_id) }}
                     {% endif %}
+
+                    {# PIEVIENOTS: Uzvarētāja badge 3. vietas spēlei ar vārda attēlošanu #}
+                    {% if match.winner_id %}
+                      <span class="badge bg-success float-end">
+                        Uzvarētājs: {{ player_map.get(match.winner_id, match.winner_id) }}
+                      </span>
+                    {% endif %}
                   </li>
                 {% endfor %}
               </ul>
@@ -87,6 +96,7 @@
     Pašreiz nav aktīva turnīra.
   </div>
 {% endif %}
+
 {% if rounds and rounds|length > 0 %}
 <script>
   let lastProgress = null;
