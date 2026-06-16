@@ -5,11 +5,13 @@
   {% set _ = player_map.update({p.id: p.name}) %}
 {% endfor %}
 
+{% set numeric_rounds = rounds | selectattr('round', 'number') | list | sort(attribute='round') %}
+
 {% block content %}
 <h1 class="mb-4">Raundi un rezultātu ievade</h1>
 
 {% if rounds and rounds|length > 0 %}
-  {% for round in rounds if round.round != 'third_place' %}
+  {% for round in numeric_rounds %}
     
     {# PĀRBAUDE: Ja šis ir fināls (tikai 1 mačs raundā), vispirms izvadam 3. vietas spēli #}
     {% if round.matches|length == 1 %}
@@ -54,7 +56,6 @@
                         Uzvarētājs: {{ player_map.get(match.winner_id, match.winner_id) }}
                       </span>
                     {% else %}
-                      {# Šeit bija pazudusi poga saglabāšanai #}
                       {% if not match.is_bye %}
                         <button type="submit" class="btn btn-primary">Saglabāt</button>
                       {% endif %}
@@ -68,10 +69,21 @@
       {% endfor %}
     {% endif %}
 
-    {# Parastā raunda attēlošana (tostarp fināla) #}
+    {# Parastā raunda attēlošana #}
     <div class="card mb-4">
       <div class="card-header fw-bold">
-        Raunds {{ round.round }}
+        {# JAUNĀ LOĢIKA: Nosaukumu nosaka maču skaits raundā #}
+        {% set match_count = round.matches | length %}
+        
+        {% if match_count == 1 %}
+          Fināls
+        {% elif match_count == 2 %}
+          Pusfināls
+        {% elif match_count == 4 %}
+          Ceturtdaļfināls
+        {% else %}
+          {{ round.round }}. kārta
+        {% endif %}
       </div>
       <ul class="list-group list-group-flush">
         {% for match in round.matches %}

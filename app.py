@@ -92,7 +92,8 @@ def create_app():
         return render_template(
             'viewer_bracket.html',
             rounds=data.get('rounds', []),
-            players=data.get('players', [])
+            players=data.get('players', []),
+            total_rounds=data.get('total_rounds')
         )
 
     @app.route('/viewer/standings')
@@ -158,7 +159,8 @@ def create_app():
             players=len(data.get('players', [])),
             status=STATUS_LABELS.get(status_code, status_code),
             status_code=status_code,
-            rounds=data.get('rounds', [])
+            rounds=data.get('rounds', []),
+            total_rounds=data.get('total_rounds')
         )
 
     @app.route('/admin/players')
@@ -220,8 +222,21 @@ def create_app():
     @auth_service.login_required
     def admin_generate_bracket():
         data = tournament_service.load_tournament(app.config['DATA_FILE'])
-        data['rounds'] = bracket_service.generate_initial_bracket(data.get('players', []))
+        rounds = bracket_service.generate_initial_bracket(data.get('players', []))
+        data['rounds'] = rounds
         data['status'] = 'in_progress'
+        
+        # numeric_rounds = [r for r in rounds if isinstance(r.get('round'), int)]
+        # data['total_rounds'] = len(numeric_rounds)
+
+        import math
+        player_count = len(data.get('players', []))
+        if player_count > 1:
+            total_rounds = math.ceil(math.log2(player_count))
+        else:
+            total_rounds = 1
+        data['total_rounds'] = total_rounds
+
         tournament_service.save_tournament(app.config['DATA_FILE'], data)
         return redirect(url_for('admin_rounds'))
 

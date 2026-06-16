@@ -1,5 +1,7 @@
 {% extends "base.html" %}
 
+{% set total_rounds = total_rounds or numeric_rounds|length %}
+
 {% set player_map = {} %}
 {% for p in players %}
   {% set _ = player_map.update({p.id: p.name}) %}
@@ -21,7 +23,16 @@
             {% if round.round == 'third_place' %}
               Spēle par 3. vietu
             {% else %}
-              Raunds {{ round.round }}
+              {% set pos_from_end = total_rounds - round.round + 1 %}
+              {% if pos_from_end == 1 %}
+                Fināls
+              {% elif pos_from_end == 2 %}
+                Pusfināls
+              {% elif pos_from_end == 3 %}
+                Ceturtdaļfināls
+              {% else %}
+                {{ round.round }}. kārta
+              {% endif %}
             {% endif %}
           </div>
           <ul class="list-group list-group-flush">
