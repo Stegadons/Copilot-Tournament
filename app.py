@@ -122,7 +122,10 @@ def create_app():
                 if m.get('winner_id') is not None:
                     completed_matches += 1
 
-        return {"progress": completed_matches}
+        return {
+            "progress": completed_matches,
+            "status": data.get('status', 'not_started')    
+            }
   
     # ===== Admin autentifikācija =====
     @app.route('/admin/login', methods=['GET', 'POST'])

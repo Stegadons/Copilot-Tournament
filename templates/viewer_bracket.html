@@ -99,18 +99,31 @@
 
 {# auto-refresh skripts #}
 <script>
-  let lastProgress = null;
+  // Saglabāsim abus parametrus kā vienu objektu
+  let lastState = null;
 
   async function checkProgress() {
     try {
       const response = await fetch("/viewer/progress");
-      const data = await response.json();
+      if (!response.ok) return;
 
-      if (lastProgress !== null && data.progress !== lastProgress) {
-        window.location.reload();
+      const data = await response.json();
+      
+      // Pārbaudām, vai šī nav pirmā ielāde (initial load)
+      if (lastState !== null) {
+        // Ja ir mainījies status (piem., no not_started uz in_progress)
+        // VAI ir mainījies pabeigto maču skaits
+        if (data.status !== lastState.status || data.progress !== lastState.progress) {
+          window.location.reload();
+          return; // pārtraucam izpildi, lapa tūlīt pārlādēsies
+        }
       }
 
-      lastProgress = data.progress;
+      // Saglabājam pašreizējo stāvokli nākamajai pārbaudei
+      lastState = {
+        status: data.status,
+        progress: data.progress
+      };
     } catch (e) {
       console.error("Progress check failed", e);
     }
