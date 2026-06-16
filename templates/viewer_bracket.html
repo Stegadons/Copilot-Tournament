@@ -97,7 +97,7 @@
   </div>
 {% endif %}
 
-{% if rounds and rounds|length > 0 %}
+{# auto-refresh skripts #}
 <script>
   let lastProgress = null;
 
@@ -122,5 +122,4 @@
   // initial load
   checkProgress();
 </script>
-{% endif %}
 {% endblock %}
