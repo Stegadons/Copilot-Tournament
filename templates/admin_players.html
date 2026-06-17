@@ -1,14 +1,20 @@
 {% extends "base.html" %}
 
 {% block content %}
+{% set locked = rounds and rounds|length > 0 %}
+
 <div class="container mt-4">
   <h2>Spēlētāju pārvaldība</h2>
-
+  
   <a href="{{ url_for('admin_dashboard') }}" class="btn btn-secondary mb-3">
     ← Atpakaļ
   </a>
-
-  {% set locked = rounds and rounds|length > 0 %}
+  
+  {% if locked %}
+  <div class="alert alert-warning mt-3">
+    Spēlētājus var rediģēt tikai pirms turnīra sākuma.
+  </div>
+  {% endif %}
 
   <table class="table table-striped">
     <thead>
@@ -34,26 +40,42 @@
         </td>
 
         <td>
+          {% if locked %}
+            <span class="d-inline-block" tabindex="0" data-bs-toggle="tooltip" title="Turnīrs jau sācies">
+          {% endif %}
+
             <button 
               type="submit" 
               class="btn btn-primary btn-sm"
-              {% if locked %}disabled title="Turnīrs jau sācies"{% endif %}
+              {% if locked %}disabled{% endif %}
             >
               Saglabāt
             </button>
+
+          {% if locked %}
+            </span>
+          {% endif %}
           </form>
 
           <form method="post" action="{{ url_for('admin_delete_player') }}" style="display:inline;">
             <input type="hidden" name="player_id" value="{{ p.id }}">
 
-            <button 
-              type="submit" 
-              class="btn btn-danger btn-sm"
-              onclick="return confirm('Vai dzēst spēlētāju?')"
-              {% if locked %}disabled title="Turnīrs jau sācies"{% endif %}
-            >
-              Dzēst
-            </button>
+            {% if locked %}
+              <span class="d-inline-block" tabindex="0" data-bs-toggle="tooltip" title="Turnīrs jau sācies">
+            {% endif %}
+
+              <button 
+                type="submit" 
+                class="btn btn-danger btn-sm"
+                {% if not locked %}onclick="return confirm('Vai dzēst spēlētāju?')"{% endif %}
+                {% if locked %}disabled{% endif %}
+              >
+                Dzēst
+              </button>
+
+            {% if locked %}
+              </span>
+            {% endif %}
           </form>
         </td>
       </tr>
@@ -61,11 +83,6 @@
     </tbody>
   </table>
 
-  {% if locked %}
-  <div class="alert alert-warning mt-3">
-    Spēlētājus var rediģēt tikai pirms turnīra sākuma.
-  </div>
-  {% endif %}
 
 </div>
 {% endblock %}
