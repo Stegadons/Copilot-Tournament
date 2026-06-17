@@ -8,7 +8,7 @@
     Turnīra rezultāti
 </h1>
 
-{% if standings and standings|length > 0 %}
+{% if status_code != 'not_started' and standings and standings|length > 0 %}
   <table class="table table-striped table-bordered table-hover shadow-lg">
     <thead class="table-dark">
       <tr>
